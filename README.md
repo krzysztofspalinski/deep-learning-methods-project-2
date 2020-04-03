@@ -2,7 +2,7 @@
 
 Second Project for Deep Learning Methods course (summer semester 2019/2020) at Warsaw University of Technology.
 
-Solution by Jakub Kała & Krzysztof Spaliński. 
+Solution by [Jakub Kała](https://github.com/jakubkala) & [Krzysztof Spaliński](https://github.com/krzysztofspalinski). 
 
 ## Content
 
