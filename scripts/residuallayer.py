@@ -1,31 +1,41 @@
 import tensorflow as tf
 
-# https://www.tensorflow.org/tutorials/customization/custom_layers
 class ResnetIdentityBlock(tf.keras.Model):
-  def __init__(self, kernel_size, filters):
+  def __init__(self, kernel_size, filters, batch_normalization=True, conv_first=False):
     super(ResnetIdentityBlock, self).__init__(name='')
-    filters1, filters2, filters3 = filters
 
-    self.conv2a = tf.keras.layers.Conv2D(filters1, (1, 1))
-    self.bn2a = tf.keras.layers.BatchNormalization()
+    self.residual_layers = []
 
-    self.conv2b = tf.keras.layers.Conv2D(filters2, kernel_size, padding='same')
-    self.bn2b = tf.keras.layers.BatchNormalization()
+    for i in range(len(filters)):
 
-    self.conv2c = tf.keras.layers.Conv2D(filters3, (1, 1))
-    self.bn2c = tf.keras.layers.BatchNormalization()
+        if conv_first:
+            setattr(self, 'conv' + str(i+1), tf.keras.layers.Conv2D(filters[i], kernel_size, padding='same'))
+            self.residual_layers.append('conv' + str(i+1))
+
+            if batch_normalization:
+                setattr(self, 'bn' + str(i+1), tf.keras.layers.BatchNormalization())
+                self.residual_layers.append('bn' + str(i+1))
+
+        else:
+            if batch_normalization:
+                setattr(self, 'bn' + str(i+1), tf.keras.layers.BatchNormalization())
+                self.residual_layers.append('bn' + str(i+1))
+
+            setattr(self, 'conv' + str(i+1), tf.keras.layers.Conv2D(filters[i], kernel_size, padding='same'))
+            self.residual_layers.append('conv' + str(i+1))
+
+
 
   def call(self, input_tensor, training=False):
-    x = self.conv2a(input_tensor)
-    x = self.bn2a(x, training=training)
-    x = tf.nn.relu(x)
 
-    x = self.conv2b(x)
-    x = self.bn2b(x, training=training)
-    x = tf.nn.relu(x)
+    x = input_tensor
 
-    x = self.conv2c(x)
-    x = self.bn2c(x, training=training)
+    for layer in self.residual_layers:
+        if isinstance(layer, tf.keras.layers.Conv2D):
+            x = getattr(self, layer)(x)
+        else:
+            x = getattr(self, layer)(x, training=False)
+        x = tf.nn.relu(x)
 
     x += input_tensor
     return tf.nn.relu(x)
