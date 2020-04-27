@@ -114,7 +114,6 @@ NUM_CLASSES = 10
 INPUT_SHAPE = (32, 32, 3)
 
 NUM_EPOCHS = 100
-learning_rate = 1e-4
 BATCH_SIZE=128
 
 
@@ -154,8 +153,8 @@ model.summary()
 datagen.fit(x_train)
 
 lr_schedule = tfa.optimizers.CyclicalLearningRate(
-    initial_learning_rate=1e-4,
-    maximal_learning_rate=1e-3,
+    initial_learning_rate=1e-5,
+    maximal_learning_rate=1e-4,
     step_size=2000,
     scale_fn=lambda x: 1.,
     scale_mode="cycle",
