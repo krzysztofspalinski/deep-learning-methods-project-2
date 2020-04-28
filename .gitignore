@@ -1,0 +1,7 @@
+.gitigonre
+.ipynb_checkpoints/
+data/
+checkpoints/
+models/
+__pycache__/
+*.csv
